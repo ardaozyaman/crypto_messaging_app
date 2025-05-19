@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontrol Paneli - Kriptografi Mesajlaşma</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 20px;
+            background-color: #f8f9fa;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .message-card {
+            margin-bottom: 15px;
+        }
+        .message-sender {
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .message-time {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+        .message-content {
+            margin-top: 10px;
+        }
+        .media-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+        .nav-tabs {
+            margin-bottom: 20px;
+        }
+        .tab-content {
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 0.25rem 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">Kriptografi Mesajlaşma</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/dashboard">Kontrol Paneli</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">Çıkış Yap</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Profil Bilgileri</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Kullanıcı Adı:</strong> {{ username }}</p>
+                        <p><strong>Durum:</strong> <span class="badge bg-success">Çevrimiçi</span></p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Yeni Mesaj Gönder</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="messageTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text" type="button" role="tab">Metin</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="image-tab" data-bs-toggle="tab" data-bs-target="#image" type="button" role="tab">Görsel</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="audio-tab" data-bs-toggle="tab" data-bs-target="#audio" type="button" role="tab">Ses</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="messageTabContent">
+                            <!-- Metin Mesajı Formu -->
+                            <div class="tab-pane fade show active" id="text" role="tabpanel">
+                                <form method="post" action="/send_message">
+                                    <div class="mb-3">
+                                        <label for="text-recipient" class="form-label">Alıcı</label>
+                                        <select class="form-select" id="text-recipient" name="recipient" required>
+                                            <option value="" selected disabled>Alıcı seçin</option>
+                                            {% for user in users %}
+                                                {% if user != username %}
+                                                <option value="{{ user }}">{{ user }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="text-content" class="form-label">Mesaj</label>
+                                        <textarea class="form-control" id="text-content" name="content" rows="4" required></textarea>
+                                    </div>
+                                    <input type="hidden" name="type" value="text">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary">Gönder</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Görsel Mesajı Formu -->
+                            <div class="tab-pane fade" id="image" role="tabpanel">
+                                <form method="post" action="/send_message" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <label for="image-recipient" class="form-label">Alıcı</label>
+                                        <select class="form-select" id="image-recipient" name="recipient" required>
+                                            <option value="" selected disabled>Alıcı seçin</option>
+                                            {% for user in users %}
+                                                {% if user != username %}
+                                                <option value="{{ user }}">{{ user }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="image-file" class="form-label">Görsel Seç</label>
+                                        <input class="form-control" type="file" id="image-file" name="file" accept="image/jpeg,image/png" required>
+                                        <div class="form-text">Desteklenen formatlar: JPG, PNG</div>
+                                    </div>
+                                    <input type="hidden" name="type" value="image">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary">Gönder</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Ses Mesajı Formu -->
+                            <div class="tab-pane fade" id="audio" role="tabpanel">
+                                <form method="post" action="/send_message" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <label for="audio-recipient" class="form-label">Alıcı</label>
+                                        <select class="form-select" id="audio-recipient" name="recipient" required>
+                                            <option value="" selected disabled>Alıcı seçin</option>
+                                            {% for user in users %}
+                                                {% if user != username %}
+                                                <option value="{{ user }}">{{ user }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="audio-file" class="form-label">Ses Dosyası Seç</label>
+                                        <input class="form-control" type="file" id="audio-file" name="file" accept="audio/mp3,audio/wav" required>
+                                        <div class="form-text">Desteklenen formatlar: MP3, WAV</div>
+                                    </div>
+                                    <input type="hidden" name="type" value="audio">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary">Gönder</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Gelen Mesajlar</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if messages|length > 0 %}
+                            <div class="message-container">
+                                {% for message in messages %}
+                                <div class="card message-card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span class="message-sender">{{ message.sender }}</span>
+                                        <span class="message-time">{{ message.timestamp }}</span>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if message.type == 'text' %}
+                                            <div class="message-content">{{ message.content }}</div>
+                                        {% elif message.type == 'image' %}
+                                            <div class="message-content">
+                                                <p>Görsel mesaj:</p>
+                                                <img src="data:image/jpeg;base64,{{ message.content }}" class="media-preview" alt="Görsel">
+                                            </div>
+                                        {% elif message.type == 'audio' %}
+                                            <div class="message-content">
+                                                <p>Ses mesajı:</p>
+                                                <audio controls>
+                                                    <source src="data:audio/mpeg;base64,{{ message.content }}" type="audio/mpeg">
+                                                    Tarayıcınız ses dosyasını desteklemiyor.
+                                                </audio>
+                                            </div>
+                                        {% elif message.type == 'error' %}
+                                            <div class="message-content text-danger">{{ message.content }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">Henüz hiç mesajınız yok.</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Kriptografi Bilgileri</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Bu uygulamada, mesajlarınız RSA asimetrik şifreleme algoritması ile korunmaktadır:</p>
+                        <ul>
+                            <li>Gönderdiğiniz mesajlar alıcının public key'i ile şifrelenir</li>
+                            <li>Şifrelenmiş mesajlar sadece alıcının private key'i ile çözülebilir</li>
+                            <li>Metin, görsel ve ses dosyaları güvenli şekilde iletilebilir</li>
+                            <li>Tüm şifreleme ve çözme işlemleri otomatik olarak gerçekleştirilir</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

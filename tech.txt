@@ -1,0 +1,34 @@
+1. Hash (Özetleme Fonksiyonu)
+Hash, bir veriyi (ör: şifre) sabit uzunlukta, geri döndürülemez bir şekilde özetleyen matematiksel bir fonksiyondur.
+
+Aynı veri her zaman aynı hash’i üretir.
+Farklı veriler çok farklı hash’ler üretir.
+Hash’ten orijinal veriye geri dönülemez.
+Neden kullanılır?
+Şifreler veritabanında açıkça saklanmaz, hash’lenerek saklanır. Böylece veri çalınsa bile şifreler görünmez.
+
+Örnek:
+"1234" şifresi SHA-256 ile hash’lenirse:
+03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4
+
+2. RSA (Asimetrik Şifreleme)
+RSA, iki anahtarlı (asimetrik) bir şifreleme yöntemidir:
+
+Public Key (Açık Anahtar): Herkesle paylaşılır. Mesajı şifrelemek için kullanılır.
+Private Key (Gizli Anahtar): Sadece sahibinde olur. Şifreli mesajı çözmek için kullanılır.
+Nasıl çalışır?
+
+Ahmet’in public key’i ile mesaj şifrelenir.
+Sadece Ahmet’in private key’i ile bu mesaj çözülebilir.
+Böylece mesajı sadece doğru kişi okuyabilir.
+Avantajı:
+Anahtarlar farklıdır, gizli anahtar paylaşılmaz. Güvenli iletişim sağlar.
+
+3. Uygulamada Nasıl Kullanılıyor?
+Kayıt olurken: Her kullanıcı için bir RSA anahtar çifti (public ve private key) oluşturuluyor.
+Mesaj gönderirken: Alıcının public key’i ile mesaj şifreleniyor.
+Mesaj alırken: Alıcı kendi private key’i ile mesajı çözüyor.
+Şifreler: SHA-256 ile hash’lenip saklanıyor, açıkça tutulmuyor.
+Kısaca:
+Hash: Şifreleri güvenli saklamak için.
+RSA: Mesajları sadece doğru kişinin okuyabilmesi için.

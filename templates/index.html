@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kriptografi Mesajlaşma Uygulaması</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 20px;
+            background-color: #f8f9fa;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .message-card {
+            margin-bottom: 15px;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .message-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .message-sender {
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .message-time {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+        .message-content {
+            margin-top: 10px;
+        }
+        .media-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">Kriptografi Mesajlaşma</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        {% if session.username %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/dashboard">Kontrol Paneli</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">Çıkış Yap</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login">Giriş Yap</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/register">Kayıt Ol</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h1 class="card-title">Kriptografi Mesajlaşma Uygulaması</h1>
+                        <p class="card-text">
+                            Bu uygulama, kullanıcılar arasında güvenli mesajlaşma sağlar. 
+                            Tüm mesajlar RSA algoritması ile şifrelenir ve sadece alıcı tarafından çözülebilir.
+                        </p>
+                        <div class="mt-4">
+                            <a href="/login" class="btn btn-primary me-2">Giriş Yap</a>
+                            <a href="/register" class="btn btn-outline-primary">Kayıt Ol</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Güvenlik Özellikleri</h4>
+                        <ul>
+                            <li>Kullanıcı şifreleri SHA-256 ile özetlenerek saklanır</li>
+                            <li>Her kullanıcı için 2048-bit RSA anahtar çifti oluşturulur</li>
+                            <li>Mesajlar alıcının public key'i ile şifrelenir</li>
+                            <li>Şifreli mesajlar sadece alıcının private key'i ile çözülebilir</li>
+                            <li>Metin, görsel ve ses dosyaları güvenli şekilde iletilebilir</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
